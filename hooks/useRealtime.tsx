@@ -57,7 +57,7 @@ export default function useRealTime({
   onReceivedInputAudioTranscriptionCompleted,
   onReceivedError,
 }: Parameters) {
-  const wsEndpoint = `/api/realtime`;
+  const wsEndpoint = `/api/server`;
 
   const { sendJsonMessage } = useWebSocket(wsEndpoint, {
     onOpen: () => onWebSocketOpen?.(),
@@ -109,7 +109,6 @@ export default function useRealTime({
     let message: Message;
     try {
       message = JSON.parse(event.data);
-      console.log("Received message: ", message);
     } catch (e) {
       console.error("Failed to parse JSON message:", e);
       throw e;
@@ -117,27 +116,20 @@ export default function useRealTime({
 
     switch (message.type) {
       case "response.done":
-        console.log("Received response.done");
         onReceivedResponseDone?.(message as ResponseDone);
         break;
       case "response.audio.delta":
-        console.log("Received response.audio.delta");
         onReceivedResponseAudioDelta?.(message as ResponseAudioDelta);
         break;
       case "response.audio_transcript.delta":
-        console.log("Received response.audio_transcript.delta");
         onReceivedResponseAudioTranscriptDelta?.(
           message as ResponseAudioTranscriptDelta
         );
         break;
       case "input_audio_buffer.speech_started":
-        console.log("Received input_audio_buffer.speech_started");
         onReceivedInputAudioBufferSpeechStarted?.(message);
         break;
       case "conversation.item.input_audio_transcription.completed":
-        console.log(
-          "Received conversation.item.input_audio_transcription.completed"
-        );
         onReceivedInputAudioTranscriptionCompleted?.(
           message as ResponseInputAudioTranscriptionCompleted
         );
